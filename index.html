@@ -22,6 +22,20 @@
       'login_status': 'failure',
       'error_reason': 'invalid_credentials' // Optional: More specific error
     });
+    // gtag code for adding to the code
+
+    // Used within the successful login event
+    gtag('event', 'login', {
+      'login_status': 'success',
+      'login_method': 'username_password'
+    });
+    
+    // Used within the failed login event (can also be 'username_password')
+    gtag('event', 'login', {
+      'login_status': 'failure',
+      'login_method': 'username_password',
+      'error_reason': 'invalid_credentials'
+    });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
