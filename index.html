@@ -36,6 +36,18 @@
       'login_method': 'username_password',
       'error_reason': 'invalid_credentials'
     });
+    // gtag code for adding to the code
+
+    // On successful password reset link sent
+    gtag('event', 'forgot_password', {
+      'forgot_password_status': 'link_sent'
+    });
+    
+    // If there was an error (e.g., email not found, though not implemented in your current JS)
+    gtag('event', 'forgot_password', {
+      'forgot_password_status': 'error',
+      'error_reason': 'email_not_found' // Example error reason
+    });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
