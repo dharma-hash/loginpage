@@ -9,6 +9,19 @@
       gtag('js', new Date());
     
       gtag('config', 'G-6B2W6EERMK');
+        // gtag code for adding to the code
+
+    // On successful login
+    gtag('event', 'login', {
+      'login_status': 'success',
+      'method': 'username_password' // Optional: You can add login method
+    });
+    
+    // On failed login
+    gtag('event', 'login', {
+      'login_status': 'failure',
+      'error_reason': 'invalid_credentials' // Optional: More specific error
+    });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
