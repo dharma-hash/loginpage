@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-WM4PT5V5');</script>
-    <!-- End Google Tag Manager -->
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6B2W6EERMK"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -16,45 +13,6 @@
       gtag('js', new Date());
     
       gtag('config', 'G-6B2W6EERMK');
-        // gtag code for adding to the code
-
-    // On successful login
-    gtag('event', 'login', {
-      'login_status': 'success',
-      'method': 'username_password' // Optional: You can add login method
-    });
-    
-    // On failed login
-    gtag('event', 'login', {
-      'login_status': 'failure',
-      'error_reason': 'invalid_credentials' // Optional: More specific error
-    });
-    // gtag code for adding to the code
-
-    // Used within the successful login event
-    gtag('event', 'login', {
-      'login_status': 'success',
-      'login_method': 'username_password'
-    });
-    
-    // Used within the failed login event (can also be 'username_password')
-    gtag('event', 'login', {
-      'login_status': 'failure',
-      'login_method': 'username_password',
-      'error_reason': 'invalid_credentials'
-    });
-    // gtag code for adding to the code
-
-    // On successful password reset link sent
-    gtag('event', 'forgot_password', {
-      'forgot_password_status': 'link_sent'
-    });
-    
-    // If there was an error (e.g., email not found, though not implemented in your current JS)
-    gtag('event', 'forgot_password', {
-      'forgot_password_status': 'error',
-      'error_reason': 'email_not_found' // Example error reason
-    });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -112,11 +70,8 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
-     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WM4PT5V5"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-
     <div id="messageBox" class="message-box"></div>
 
     <div id="authContainer" class="w-full max-w-md bg-white rounded-xl shadow-2xl p-10 md:p-14 mb-8">
@@ -168,7 +123,7 @@
     </div>
 
     <div id="loggedInContent" class="hidden w-full max-w-4xl bg-white rounded-xl shadow-2xl p-10 md:p-14 mb-8 flex flex-col items-center justify-center"
-         style="min-height: 400px; background: linear-gradient(135deg, #d1f7e0 0%, #a7e6c4 100%);">
+          style="min-height: 400px; background: linear-gradient(135deg, #d1f7e0 0%, #a7e6c4 100%);">
         <p class="text-5xl font-extrabold text-gray-800 text-center mb-10 drop-shadow-lg">Welcome to the page!</p>
         <button id="logoutButton"
                 class="mt-10 bg-red-600 text-white py-3 px-6 rounded-lg font-semibold text-lg hover:bg-red-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
@@ -197,13 +152,19 @@
         const logoutButton = document.getElementById('logoutButton');
         const loginSection = document.getElementById('loginSection');
         const forgotPasswordSection = document.getElementById('forgotPasswordSection'); // New
-        const forgotPasswordLink = document.getElementById('forgotPasswordLink');     // New
-        const backToLoginLink = document.getElementById('backToLoginLink');         // New
-        const forgotPasswordForm = document.getElementById('forgotPasswordForm');     // New
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');      // New
+        const backToLoginLink = document.getElementById('backToLoginLink');          // New
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');      // New
 
         // Hardcoded credentials for simulation
         const CORRECT_USERNAME = 'Dharma';
         const CORRECT_PASSWORD = '1234';
+
+        // --- Initial User Status for GA4 (on page load) ---
+        // Assuming user is initially logged out.
+        gtag('set', 'user_properties', {
+          login_status: 'logged_out'
+        });
 
         // --- Login Form Logic ---
         loginForm.addEventListener('submit', function(event) {
@@ -220,6 +181,12 @@
             usernameError.classList.add('hidden');
             passwordError.classList.add('hidden');
 
+            // Send a custom event for each login attempt
+            gtag('event', 'login_attempt', {
+                'login_attempts_count': 1 // Custom metric value
+            });
+
+
             if (usernameInput.value.trim() === '') {
                 usernameError.classList.remove('hidden');
                 isValidLogin = false;
@@ -235,11 +202,35 @@
                     authContainer.classList.add('hidden'); // Hide the authentication container
                     loggedInContent.classList.remove('hidden'); // Show the logged-in content
                     loginForm.reset(); // Clear login form
+
+                    // GA4: Successful login event
+                    gtag('event', 'login', {
+                        'method': 'username_password', // Example parameter
+                        'login_result': 'success',
+                        'login_attempts_count': 0 // Reset for next successful login
+                    });
+                    // GA4: Update user property for login status
+                    gtag('set', 'user_properties', {
+                      login_status: 'logged_in'
+                    });
+
                 } else {
                     showMessage('Invalid username or password. Please try again.', 'error');
+                    // GA4: Failed login event
+                    gtag('event', 'login', {
+                        'method': 'username_password',
+                        'login_result': 'failure',
+                        'login_attempts_count': 0 // Reset for next successful login
+                    });
                 }
             } else {
                 showMessage('Please enter your username and password.', 'error');
+                // GA4: Failed login due to empty fields
+                 gtag('event', 'login', {
+                    'method': 'username_password',
+                    'login_result': 'empty_fields', // More specific failure
+                    'login_attempts_count': 0 // Reset for next successful login
+                });
             }
         });
 
@@ -250,6 +241,9 @@
             forgotPasswordSection.classList.remove('hidden'); // Show forgot password form
             forgotPasswordForm.reset(); // Clear form fields
             document.getElementById('resetEmailError').classList.add('hidden'); // Hide any previous error
+
+            // GA4: Event for navigating to forgot password
+            gtag('event', 'navigate_forgot_password');
         });
 
         backToLoginLink.addEventListener('click', function(event) {
@@ -259,6 +253,9 @@
             loginForm.reset(); // Clear form fields
             document.getElementById('usernameError').classList.add('hidden'); // Hide any previous errors
             document.getElementById('passwordError').classList.add('hidden');
+
+            // GA4: Event for navigating back to login
+            gtag('event', 'navigate_back_to_login');
         });
 
         forgotPasswordForm.addEventListener('submit', function(event) {
@@ -269,9 +266,19 @@
 
             resetEmailError.classList.add('hidden');
 
+            // Send a custom event for each forgot password attempt
+            gtag('event', 'forgot_password_attempt', {
+                'forgot_password_attempts_count': 1 // Custom metric value
+            });
+
             if (resetEmailInput.value.trim() === '') {
                 resetEmailError.classList.remove('hidden');
                 showMessage('Please enter your username or email to reset password.', 'error');
+                // GA4: Failed forgot password due to empty field
+                gtag('event', 'forgot_password_submit', {
+                    'forgot_password_result': 'empty_field',
+                    'forgot_password_attempts_count': 0 // Reset for next successful attempt
+                });
             } else {
                 // Simulate sending a reset link
                 showMessage('A password reset link has been sent to ' + resetEmailInput.value + '.', 'success');
@@ -281,6 +288,12 @@
                     forgotPasswordSection.classList.add('hidden');
                     loginSection.classList.remove('hidden');
                 }, 2000); // Wait 2 seconds before returning to login
+
+                // GA4: Successful forgot password request
+                gtag('event', 'forgot_password_submit', {
+                    'forgot_password_result': 'link_sent',
+                    'forgot_password_attempts_count': 0 // Reset for next successful attempt
+                });
             }
         });
 
@@ -291,6 +304,13 @@
             authContainer.classList.remove('hidden'); // Show the authentication container again
             loginSection.classList.remove('hidden'); // Ensure login section is visible
             forgotPasswordSection.classList.add('hidden'); // Ensure forgot password section is hidden
+
+            // GA4: Logout event
+            gtag('event', 'logout');
+            // GA4: Update user property for login status
+            gtag('set', 'user_properties', {
+              login_status: 'logged_out'
+            });
         });
     </script>
 </body>
