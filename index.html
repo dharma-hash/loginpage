@@ -2,19 +2,12 @@
 <html lang="en">
 <head>
     <script>
+        // Google Tag Manager (GTM) snippet - placed as high as possible in the <head>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-WM4PT5V5');
-    </script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6B2W6EERMK"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-6B2W6EERMK');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -134,6 +127,9 @@
     </div>
 
     <script>
+        // Ensure dataLayer is initialized before use
+        window.dataLayer = window.dataLayer || [];
+
         // Function to display messages (success/error) to the user
         function showMessage(message, type) {
             const messageBox = document.getElementById('messageBox');
@@ -154,18 +150,20 @@
         const logoutButton = document.getElementById('logoutButton');
         const loginSection = document.getElementById('loginSection');
         const forgotPasswordSection = document.getElementById('forgotPasswordSection'); // New
-        const forgotPasswordLink = document.getElementById('forgotPasswordLink');      // New
-        const backToLoginLink = document.getElementById('backToLoginLink');          // New
-        const forgotPasswordForm = document.getElementById('forgotPasswordForm');      // New
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');       // New
+        const backToLoginLink = document.getElementById('backToLoginLink');             // New
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');       // New
 
         // Hardcoded credentials for simulation
         const CORRECT_USERNAME = 'Dharma';
         const CORRECT_PASSWORD = '1234';
 
-        // --- Initial User Status for GA4 (on page load) ---
-        // Assuming user is initially logged out.
-        gtag('set', 'user_properties', {
-          login_status: 'logged_out'
+        // --- Initial User Status (for GTM to pick up) ---
+        // Push initial login status to dataLayer for GTM to set as a user property.
+        // This will be picked up by the GA4 Configuration Tag with a 'login_status' user property field.
+        dataLayer.push({
+            'event': 'initial_load_status', // Custom event to trigger initial user property set in GTM
+            'login_status': 'logged_out'
         });
 
         // --- Login Form Logic ---
@@ -183,11 +181,11 @@
             usernameError.classList.add('hidden');
             passwordError.classList.add('hidden');
 
-            // Send a custom event for each login attempt
-            gtag('event', 'login_attempt', {
-                'login_attempts_count': 1 // Custom metric value
+            // GTM: Push custom event for login attempt
+            dataLayer.push({
+                'event': 'login_attempt',
+                'login_attempts_count': 1 // You can make this dynamic if you track attempts
             });
-
 
             if (usernameInput.value.trim() === '') {
                 usernameError.classList.remove('hidden');
@@ -205,33 +203,37 @@
                     loggedInContent.classList.remove('hidden'); // Show the logged-in content
                     loginForm.reset(); // Clear login form
 
-                    // GA4: Successful login event
-                    gtag('event', 'login', {
-                        'method': 'username_password', // Example parameter
+                    // GTM: Push successful login event
+                    dataLayer.push({
+                        'event': 'login',
+                        'method': 'username_password',
                         'login_result': 'success',
-                        'login_attempts_count': 0 // Reset for next successful login
+                        'login_attempts_count': 0 // Reset for next successful login sequence
                     });
-                    // GA4: Update user property for login status
-                    gtag('set', 'user_properties', {
-                      login_status: 'logged_in'
+                    // GTM: Update user property for login status
+                    dataLayer.push({
+                        'event': 'user_properties_update', // Custom event to trigger user property update in GTM
+                        'login_status': 'logged_in'
                     });
 
                 } else {
                     showMessage('Invalid username or password. Please try again.', 'error');
-                    // GA4: Failed login event
-                    gtag('event', 'login', {
+                    // GTM: Push failed login event
+                    dataLayer.push({
+                        'event': 'login',
                         'method': 'username_password',
                         'login_result': 'failure',
-                        'login_attempts_count': 0 // Reset for next successful login
+                        'login_attempts_count': 0 // Reset for next successful login sequence
                     });
                 }
             } else {
                 showMessage('Please enter your username and password.', 'error');
-                // GA4: Failed login due to empty fields
-                 gtag('event', 'login', {
+                // GTM: Push failed login due to empty fields
+                dataLayer.push({
+                    'event': 'login',
                     'method': 'username_password',
                     'login_result': 'empty_fields', // More specific failure
-                    'login_attempts_count': 0 // Reset for next successful login
+                    'login_attempts_count': 0 // Reset for next successful login sequence
                 });
             }
         });
@@ -244,8 +246,10 @@
             forgotPasswordForm.reset(); // Clear form fields
             document.getElementById('resetEmailError').classList.add('hidden'); // Hide any previous error
 
-            // GA4: Event for navigating to forgot password
-            gtag('event', 'navigate_forgot_password');
+            // GTM: Push event for navigating to forgot password
+            dataLayer.push({
+                'event': 'navigate_forgot_password'
+            });
         });
 
         backToLoginLink.addEventListener('click', function(event) {
@@ -256,8 +260,10 @@
             document.getElementById('usernameError').classList.add('hidden'); // Hide any previous errors
             document.getElementById('passwordError').classList.add('hidden');
 
-            // GA4: Event for navigating back to login
-            gtag('event', 'navigate_back_to_login');
+            // GTM: Push event for navigating back to login
+            dataLayer.push({
+                'event': 'navigate_back_to_login'
+            });
         });
 
         forgotPasswordForm.addEventListener('submit', function(event) {
@@ -268,16 +274,18 @@
 
             resetEmailError.classList.add('hidden');
 
-            // Send a custom event for each forgot password attempt
-            gtag('event', 'forgot_password_attempt', {
-                'forgot_password_attempts_count': 1 // Custom metric value
+            // GTM: Push custom event for forgot password attempt
+            dataLayer.push({
+                'event': 'forgot_password_attempt',
+                'forgot_password_attempts_count': 1 // You can make this dynamic
             });
 
             if (resetEmailInput.value.trim() === '') {
                 resetEmailError.classList.remove('hidden');
                 showMessage('Please enter your username or email to reset password.', 'error');
-                // GA4: Failed forgot password due to empty field
-                gtag('event', 'forgot_password_submit', {
+                // GTM: Push failed forgot password due to empty field
+                dataLayer.push({
+                    'event': 'forgot_password_submit',
                     'forgot_password_result': 'empty_field',
                     'forgot_password_attempts_count': 0 // Reset for next successful attempt
                 });
@@ -291,8 +299,9 @@
                     loginSection.classList.remove('hidden');
                 }, 2000); // Wait 2 seconds before returning to login
 
-                // GA4: Successful forgot password request
-                gtag('event', 'forgot_password_submit', {
+                // GTM: Push successful forgot password request
+                dataLayer.push({
+                    'event': 'forgot_password_submit',
                     'forgot_password_result': 'link_sent',
                     'forgot_password_attempts_count': 0 // Reset for next successful attempt
                 });
@@ -307,11 +316,14 @@
             loginSection.classList.remove('hidden'); // Ensure login section is visible
             forgotPasswordSection.classList.add('hidden'); // Ensure forgot password section is hidden
 
-            // GA4: Logout event
-            gtag('event', 'logout');
-            // GA4: Update user property for login status
-            gtag('set', 'user_properties', {
-              login_status: 'logged_out'
+            // GTM: Push logout event
+            dataLayer.push({
+                'event': 'logout'
+            });
+            // GTM: Update user property for login status
+            dataLayer.push({
+                'event': 'user_properties_update', // Custom event to trigger user property update in GTM
+                'login_status': 'logged_out'
             });
         });
     </script>
